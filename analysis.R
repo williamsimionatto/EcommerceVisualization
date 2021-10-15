@@ -151,3 +151,20 @@ geo_df = final_order %>%
         TRUE ~ as.character(state)
       )
   )
+
+# Generating analysis by time
+time_df = final_order %>%
+  filter(is.na(purchase_date) == F) %>%
+  mutate(purchase_date = as.Date(purchase_date)) %>%
+  group_by(purchase_date) %>%
+  summarise(salesbyday = sum(value))
+
+# Generating analysis by categories
+detailed_cat_df = final_order %>%
+  filter(is.na(product_category) == F) %>%
+  group_by(product_category) %>%
+  summarise(
+    total_sales = sum(value),
+    salesperitem = round(sum(value) / n(), 2),
+    avg_review = round(mean(review_score), 3)
+  ) 
