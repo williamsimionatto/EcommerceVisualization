@@ -68,3 +68,42 @@ joined_order = orders %>%
     product_category_name_english,
     shipping_cost
   )
+
+# Cleaning Table Data
+final_order = joined_order %>%
+  filter(order_status != "canceled" & value > 0) %>%
+  rename(
+    purchase_date = order_purchase_timestamp,
+    delivered_date = order_delivered_customer_date,
+    est_delivered_date = order_estimated_delivery_date,
+    zip = customer_zip_code_prefix,
+    city = customer_city,
+    state = customer_state,
+    product_category = product_category_name_english
+  ) %>%
+  mutate(
+    purchase_date = lubridate::as_datetime(purchase_date),
+    delivered_date = lubridate::as_datetime(delivered_date),
+    est_delivered_date = lubridate::as_datetime(est_delivered_date)
+  ) %>%
+  distinct() %>%
+  mutate(
+    purchase_date = lubridate::date(purchase_date),
+    delivered_date = lubridate::date(delivered_date),
+    est_delivered_date = lubridate::date(est_delivered_date)
+  ) %>%
+  mutate(delivery_days = delivered_date - purchase_date,
+         diff_estdel = est_delivered_date - delivered_date) %>%
+  mutate(
+    product_category = case_when(
+      product_category == "home_appliances_2" ~ "home_appliances",
+      product_category == "home_comfort_2" ~ "home_comfort",
+      product_category == "home_confort" ~ "home_comfort",
+      product_category == "fashio_female_clothing" ~ "fashion_female_clothing",
+      product_category == "art" ~ "arts_and_craftmanship",
+      product_category == "drinks" | product_category == "food" ~ "food_drink",
+      TRUE ~ as.character(product_category)
+    )
+  )
+
+
