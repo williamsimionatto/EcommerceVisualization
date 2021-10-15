@@ -230,4 +230,9 @@ cat_time_df = final_order %>%
   bind_rows(time_df2) %>%
   spread(key = "category", value = "sales")
 
-
+# Export dfs
+write.csv(final_order, file = "Shiny/data/final_order.csv", row.names = F)
+write.csv(geo_df, file = "Shiny/data/geo_df.csv", row.names = F)
+write.csv(time_df, file = "Shiny/data/time_df.csv", row.names = F)
+write.csv(cat_df, file = "Shiny/data/cat_df.csv", row.names = F)
+write.csv(cat_time_df, file = "Shiny/data/cat_time_df.csv", row.names = F)
