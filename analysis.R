@@ -39,4 +39,32 @@ shipping_cost = items %>%
   group_by(order_id) %>%
   summarise(shipping_cost = sum(freight_value))
 
-
+# Joining all tables
+joined_order = orders %>%
+  left_join(cleaned_pay, by = "order_id") %>%
+  left_join(customer, by = "customer_id") %>%
+  left_join(cleaned_geo,
+            by = c("customer_zip_code_prefix" = "geolocation_zip_code_prefix")) %>%
+  left_join(reviews, by = "order_id") %>%
+  left_join(shipping_cost, by = "order_id") %>%
+  left_join(items, by = "order_id") %>%
+  left_join(cleaned_categoria, by = "product_id") %>%
+  select(
+    order_id,
+    customer_id,
+    order_status,
+    order_purchase_timestamp,
+    order_delivered_customer_date,
+    order_estimated_delivery_date,
+    value,
+    customer_unique_id,
+    customer_zip_code_prefix,
+    lat,
+    lng,
+    customer_city,
+    customer_state,
+    review_score,
+    product_id,
+    product_category_name_english,
+    shipping_cost
+  )
