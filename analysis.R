@@ -167,4 +167,33 @@ detailed_cat_df = final_order %>%
     total_sales = sum(value),
     salesperitem = round(sum(value) / n(), 2),
     avg_review = round(mean(review_score), 3)
-  ) 
+  )
+
+detailed_cat_df = detailed_cat_df %>% 
+  mutate(category = case_when(
+      product_category %in% c("health_beauty", "perfumery", "diapers_and_hygiene") ~ "Chemists.Drgustores", 
+      product_category %in% c("watches_gifts", "fashion_bags_accessories", "luggage_accessories", "fashion_shoes", 
+                              "fashion_male_clothing", "fashion_female_clothing", "fashion_childrens_clothes", 
+                              "fashion_underwear_beach") ~ "Clothing",
+      product_category %in% c("cool_stuff", "construction_tools_construction", "home_construction", "construction_tools_lights", 
+                              "construction_tools_safety", "arts_and_craftmanship", "costruction_tools_tools") ~ "DIY Goods",
+      product_category %in% c("computers_accessories", "telephony", "computers", "electronics", "consoles_games", 
+                              "fixed_telephony", "air_conditioning", "tablets_printing_image", "cine_photo") ~ "Eletrical Goods",
+      product_category %in% c("food_drink", "la_cuisine", "flowers") ~ "Food.Consumables", 
+      product_category %in% c("furniture_decor", "office_furniture", "furniture_living_room", "home_comfort", 
+                              "kitchen_dining_laundry_garden_furniture", "small_appliances_home_oven_and_coffee", 
+                              "furniture_bedroom", "furniture_mattress_and_upholstery") ~ "Furniture.Carpets",
+      product_category %in% c("garden_tools", "costruction_tools_garden") ~ "Garden Products", 
+      product_category %in% c("bed_bath_table", "housewares", "auto", "toys", "baby", "stationery", "pet_shop",
+                              "pet_shop", "home_appliances", "small_appliances", "party_supplies", "christmas_supplies") ~ "Household.Textiles", 
+      product_category %in% c("musical_instruments", "audio", "cds_dvds_musicals", "dvds_blu_ray", "music", "books_imported", 
+                              "books_technical", "books_general_interest") ~ "Music, Films.Books",
+      product_category %in% c("sports_leisure", "fashion_sport") ~ "Sports Equipments", 
+      product_category %in% c("market_place", "agro_industry_and_commerce", "industry_commerce_and_business", "signaling_and_security",
+                              "security_and_services") ~ "Services", 
+      TRUE ~ "Other")) %>%
+  rename(sub_category = product_category)
+
+cat_df = detailed_cat_df %>%
+  group_by(category) %>%
+  summarise(total_sales = mean(total_sales), aov = mean(salesperitem), avg_review = mean(avg_review))
