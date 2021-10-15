@@ -10,3 +10,4 @@ listOrders <- read_csv("./List_of_Orders.csv")
 orderDetails <- read_csv("./Order_Details.csv")
 salesTarget <- read_csv("./Sales_target.csv")
 
+dataOrders <- left_join(listOrders, orderDetails, by = "Order ID") %>% drop_na()
