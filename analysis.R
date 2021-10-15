@@ -106,4 +106,48 @@ final_order = joined_order %>%
     )
   )
 
-
+# Generating df for geo analysis
+geo_df = final_order %>%
+  filter(is.na(shipping_cost) == F & is.na(delivery_days) == F & is.na(review_score) == F, is.na(diff_estdel) == F) %>%
+  group_by(state) %>%
+  summarise(
+    sales = sum(value),
+    salesperorder = round(sum(value) / n(), 2),
+    avg_shipcost = round(mean(shipping_cost), 2),
+    avg_shcsratio = round(mean(shipping_cost / value), 2),
+    avg_delidays = round(mean(delivery_days), 2),
+    avg_review = round(mean(review_score), 3),
+    avg_diffestdel = round(mean(diff_estdel), 2)
+  ) %>%
+  mutate(
+    state = case_when(
+        state == "AC" ~ "Acre",
+        state == "AL" ~ "Alagoas",
+        state == "AP" ~ "Amapá",
+        state == "AM" ~ "Amazonas",
+        state == "BA" ~ "Bahia", 
+        state == "CE" ~ "Ceará", 
+        state == "DF" ~ "Distrito Federal",
+        state == "ES" ~ "Espírito Santo",
+        state == "GO" ~ "Goiás",
+        state == "MA" ~ "Maranhão", 
+        state == "MT" ~ "Mato Grosso",
+        state == "MS" ~ "Mato Grosso do Sul",
+        state == "MG" ~ "Minas Gerais",
+        state == "PA" ~ "Pará",
+        state == "PB" ~ "Paraíba",
+        state == "PR" ~ "Paraná",
+        state == "PE" ~ "Pernambuco",
+        state == "PI" ~ "Piauí",
+        state == "RJ" ~ "Rio de Janeiro",
+        state == "RN" ~ "Rio Grande do Norte",
+        state == "RS" ~ "Rio Grande do Sul",
+        state == "RO" ~ "Rondônia",
+        state == "RR" ~ "Roraima",
+        state == "SC" ~ "Santa Catarina",
+        state == "SP" ~ "São Paulo",
+        state == "SE" ~ "Sergipe",
+        state == "TO" ~ "Tocantins",
+        TRUE ~ as.character(state)
+      )
+  )
