@@ -16,19 +16,27 @@ categorynames = read.csv('brazilian-ecommerce-data/product_category_name_transla
 
 # Cleaning category names
 cleaned_categoria <- products %>%
-          select(product_id, product_category_name) %>%
-          left_join(categorynames, by = 'product_category_name') %>%
-          select(-2)
+    select(product_id, product_category_name) %>%
+    left_join(categorynames, by = 'product_category_name') %>%
+    select(-2)
 
 # Cleaning Geographical data
 cleaned_geo <- geolocation %>%
-  select(geolocation_zip_code_prefix,
-         geolocation_lat,
-         geolocation_lng) %>%
-  group_by(geolocation_zip_code_prefix) %>%
-  summarise(lat = mean(geolocation_lat),
-            lng = mean(geolocation_lng))
+    select(geolocation_zip_code_prefix,
+           geolocation_lat,
+           geolocation_lng) %>%
+    group_by(geolocation_zip_code_prefix) %>%
+    summarise(lat = mean(geolocation_lat),
+              lng = mean(geolocation_lng))
+
+# Cleaning Payment Table
+cleaned_pay = payments %>%
+    group_by(order_id) %>%
+    summarise(value = sum(payment_value))
+
+# Adding shipping amount per order
+shipping_cost = items %>%
+  group_by(order_id) %>%
+  summarise(shipping_cost = sum(freight_value))
 
 
-
-                    
