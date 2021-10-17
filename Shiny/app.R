@@ -37,6 +37,15 @@ catvalue_choices = list(
 
 cats_choices = sort(cat_df$category)
 
+bar_options = list(
+  width = "automatic",
+  height = "800px",
+  bar = "{groupWidth: '80%'}",
+  hAxis = "{title:'Sales (in $BRL)', format: 'short', scaleType: 'log'}",
+  animation = "{startup: true}",
+  legend = "none"
+)
+
 ui <- fluidPage(
   theme = "style.css", 
   shinyUI(
@@ -134,6 +143,44 @@ ui <- fluidPage(
                 )
               )
             )
+          ),
+          tabItem(
+            tabName = "cat",
+            fluidRow(
+              column(
+                width = 9,
+                box(
+                  title = "Total Sales",
+                  solidHeader = T,
+                  width = NULL,
+                  height = 800,
+                  status = "info",
+                  htmlOutput("cat_TotalSales")
+                )
+              ),
+              column(
+                width = 9,
+                box(
+                  title = "Unit Sales",
+                  solidHeader = T,
+                  width = NULL,
+                  height = 800,
+                  status = "info",
+                  htmlOutput("cat_UnitSales")
+                )
+              ),
+              column(
+                width = 9,
+                box(
+                  title = "Average Review Score",
+                  solidHeader = T,
+                  width = NULL,
+                  height = 800,
+                  status = "info",
+                  htmlOutput("cat_AverageReview")
+                )
+              )
+            )
           )
         )
       )
@@ -177,6 +224,24 @@ server <- function(input, output, session) {
     geo_df %>%
       select(state, value =  input$geoin) %>%
       arrange(desc(value))
+  })
+  
+  cat_total_sales_bar = reactive({
+    cat_df %>%
+      select(category, value = 'total_sales') %>%
+      arrange(., desc(value))
+  })
+  
+  cat_unit_sales_bar = reactive({
+    cat_df %>%
+      select(category, value = 'aov') %>%
+      arrange(., desc(value))
+  })
+  
+  cat_avg_review_bar = reactive({
+    cat_df %>%
+      select(category, value = 'avg_review') %>%
+      arrange(., desc(value))
   })
 
   # Graph for Map
@@ -236,6 +301,35 @@ server <- function(input, output, session) {
     width = '100%',
     colnames = F,
     digits = 2)
+  
+  # Categories Bar Chart
+  output$cat_TotalSales = renderGvis(
+    gvisBarChart(
+      cat_total_sales_bar(),
+      options = bar_options
+    )
+  )
+  
+  output$cat_UnitSales = renderGvis(
+    gvisBarChart(
+      cat_unit_sales_bar(),
+      options = bar_options
+    )
+  )
+  
+  output$cat_AverageReview = renderGvis(
+    gvisBarChart(
+      cat_avg_review_bar(),
+      options = list(
+        width = "automatic",
+        height = "800px",
+        bar = "{groupWidth: '80%'}",
+        hAxis = "{title:'Sales (in $BRL)', format: 'short', scaleType: 'log'}",
+        animation = "{startup: true}",
+        legend = "none"
+      )
+    )
+  )
 }
 
 shinyApp(ui = ui, server = server)
