@@ -40,7 +40,10 @@ shipping_cost = items %>%
   summarise(shipping_cost = sum(freight_value))
 
 # Joining all tables
-joined_order = orders %>%
+joined_order = orders  %>% 
+  filter(order_delivered_customer_date != '',
+         order_delivered_carrier_date != '',
+         order_estimated_delivery_date != '') %>%
   left_join(cleaned_pay, by = "order_id") %>%
   left_join(customer, by = "customer_id") %>%
   left_join(cleaned_geo,
@@ -82,9 +85,9 @@ final_order = joined_order %>%
     product_category = product_category_name_english
   ) %>%
   mutate(
-    purchase_date = lubridate::as_datetime(purchase_date),
-    delivered_date = lubridate::as_datetime(delivered_date),
-    est_delivered_date = lubridate::as_datetime(est_delivered_date)
+    purchase_date = lubridate::as_datetime(purchase_date, tz = "UTC"),
+    delivered_date = lubridate::as_datetime(delivered_date, tz = "UTC"),
+    est_delivered_date = lubridate::as_datetime(est_delivered_date, tz = "UTC")
   ) %>%
   distinct() %>%
   mutate(
@@ -170,6 +173,9 @@ detailed_cat_df = final_order %>%
   )
 
 detailed_cat_df = detailed_cat_df %>% 
+  mutate(avg_review = if_else(is.na(avg_review), 0, avg_review))
+
+detailed_cat_df = detailed_cat_df %>% 
   mutate(category = case_when(
       product_category %in% c("health_beauty", "perfumery", "diapers_and_hygiene") ~ "Chemists.Drgustores", 
       product_category %in% c("watches_gifts", "fashion_bags_accessories", "luggage_accessories", "fashion_shoes", 
@@ -194,8 +200,11 @@ detailed_cat_df = detailed_cat_df %>%
       TRUE ~ "Other")) %>%
   rename(sub_category = product_category)
 
-cat_df = detailed_cat_df %>% group_by(category) %>%
-  summarise(total_sales = mean(total_sales), aov = mean(salesperitem), avg_review = mean(avg_review))
+cat_df = detailed_cat_df %>% 
+  group_by(category) %>%
+  summarise(total_sales = mean(total_sales), 
+            aov = mean(salesperitem), 
+            avg_review = mean(avg_review))
 
 # Categrorical sales by time
 time_df2 = time_df %>% rename(sales = salesbyday) %>% mutate(category = "Total Sales") %>% 
@@ -236,3 +245,4 @@ write.csv(geo_df, file = "Shiny/data/geo_df.csv", row.names = F)
 write.csv(time_df, file = "Shiny/data/time_df.csv", row.names = F)
 write.csv(cat_df, file = "Shiny/data/cat_df.csv", row.names = F)
 write.csv(cat_time_df, file = "Shiny/data/cat_time_df.csv", row.names = F)
+
