@@ -89,6 +89,14 @@ ui <- fluidPage(
                   status = "info",
                   selectizeInput("geoin", label = NULL, geo_choices)
                 ),
+                box(
+                  title = "Data",
+                  solidHeader = T,
+                  collapsible = T,
+                  width = NULL,
+                  status = "info",
+                  tableOutput({"table"})
+                )
               )
             )
           )
@@ -129,6 +137,13 @@ server <- function(input, output, session) {
     updateSelectInput(session, "catsfortable", choices = c, selected = head(c, 1))
   })
   
+  geo_df_table = reactive({
+    req(input$geoin)
+    geo_df %>%
+      select(state, value =  input$geoin) %>%
+      arrange(desc(value))
+  })
+
   # Graph for Map
   output$geo = renderLeaflet({
     pal = colorBin("Reds", geo_df[, input$geoin], bins = bins$y, pretty = F)
@@ -140,7 +155,7 @@ server <- function(input, output, session) {
                        scientific = F,
                        big.mark = ","
                      )) %>% lapply(htmltools::HTML)
-    
+
     geo = leaflet(states) %>%
       addTiles() %>%
       addPolygons(
@@ -167,6 +182,7 @@ server <- function(input, output, session) {
           direction = "auto"
         )
       )
+
     geo %>%
       addLegend(
         pal = pal,
@@ -176,6 +192,15 @@ server <- function(input, output, session) {
         position = "bottomright"
       )
   })
+
+  # Geo Data Output
+  output$table = renderTable(
+    {head(geo_df_table(), 6)},
+    striped = T,
+    spacing = 'l',
+    width = '100%',
+    colnames = F,
+    digits = 2)
 }
 
 shinyApp(ui = ui, server = server)
