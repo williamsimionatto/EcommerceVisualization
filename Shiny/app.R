@@ -1,5 +1,3 @@
-#install.packages('geojsonio')
-
 library(tidyverse)
 library(shiny)
 library(shinydashboard)
@@ -25,18 +23,6 @@ geo_choices = list(
   "Average Shipping Cost" = names(geo_df)[[4]],
   "Shipping Cost/Order Ratio" = names(geo_df)[[5]],
   "Average Delivery Days" = names(geo_df)[[6]],
-  "Average Review Score" = names(geo_df)[[7]],
-  "Est - Actual Deliver Time" = names(geo_df)[[8]]
-)
-
-xcol_choices = list(
-  "Average Order Value" = names(geo_df)[[3]],
-  "Average Shipping Cost" = names(geo_df)[[4]],
-  "Shipping Cost/Order Ratio" = names(geo_df)[[5]],
-  "Average Delivery Days" = names(geo_df)[[6]]
-)
-
-ycol_choices = list(
   "Average Review Score" = names(geo_df)[[7]],
   "Est - Actual Deliver Time" = names(geo_df)[[8]]
 )
@@ -96,6 +82,55 @@ ui <- fluidPage(
                   width = NULL,
                   status = "info",
                   tableOutput({"table"})
+                )
+              )
+            )
+          ),
+          tabItem(
+            tabName = "time",
+            fluidRow(
+              column(
+                width = 9,
+                box(
+                  title = "Trends",
+                  solidHeader = T,
+                  width = NULL,
+                  height = 1000,
+                  status = "info",
+                  htmlOutput("tim")
+                )
+              ),
+              column(
+                width = 3,
+                box(
+                  title = "Date Range Input",
+                  solidHeader = T,
+                  width = NULL,
+                  status = "info",
+                  dateRangeInput(
+                    "datein",
+                    label = NULL,
+                    start = head(time_df$purchase_date, 1),
+                    end = tail(time_df$purchase_date, 1),
+                    min = head(time_df$purchase_date, 1),
+                    max = tail(time_df$purchase_date, 1)
+                  )
+                )
+              ),
+              column(
+                width = 3,
+                box(
+                  title = "Categories To Plot",
+                  solidHeader = T,
+                  width = NULL,
+                  status = "info",
+                  pickerInput(
+                    inputId = "trdcats",
+                    choices = trd_choices,
+                    selected = trd_choices[12],
+                    options = list(`actions-box` = TRUE),
+                    multiple = TRUE
+                  )
                 )
               )
             )
