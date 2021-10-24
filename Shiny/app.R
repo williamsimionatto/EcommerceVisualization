@@ -118,7 +118,7 @@ ui <- fluidPage(
                   title = "Trends",
                   solidHeader = T,
                   width = NULL,
-                  height = 1000,
+                  height = 500,
                   status = "info",
                   htmlOutput("tim")
                 )
@@ -240,6 +240,17 @@ server <- function(input, output, session) {
       arrange(., desc(value))
   })
   
+  cat_time_df_line = reactive({
+    req(input$datein)
+    req(input$trdcats)
+    
+    cat_time_df %>%
+      select(purchase_date, input$trdcats) %>%
+      filter(purchase_date >= input$datein[1] &
+               purchase_date <= input$datein[2])
+    
+  })
+
   # Graph for Map
   output$geo = renderLeaflet({
     pal = colorBin("Reds", geo_df[, input$geoin], bins = bins$y, pretty = F)
@@ -303,7 +314,7 @@ server <- function(input, output, session) {
   })
 
   # Geo Data Output
-  output$table = DT::renderDataTable(
+  output$table = renderTable(
     {head(geo_df_table(), 6)},
     striped = T,
     spacing = 'l',
@@ -311,6 +322,20 @@ server <- function(input, output, session) {
     colnames = F,
     digits = 2
   )
+  
+  # Trend Line Chart
+  output$tim = renderGvis({
+    gvisLineChart(
+      cat_time_df_line(),
+      options = list(
+        width = "automatic",
+        height = "450px",
+        vAxis = "{title: 'Sales (in $BRL)', format: 'short'}",
+        hAxis = "{title: 'Date', format: 'MMM d, y'}",
+        animation = "{startup: true}"
+      )
+    )
+  })
   
   # Categories Bar Chart
   output$cat = renderGvis(
