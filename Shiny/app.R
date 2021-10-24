@@ -15,6 +15,7 @@ geo_df = read.csv("Shiny/data/geo_df.csv", stringsAsFactors = F)
 time_df = read.csv("Shiny/data/time_df.csv", stringsAsFactors = F)
 cat_df = read.csv("Shiny/data/cat_df.csv", stringsAsFactors = F)
 cat_time_df = read.csv("Shiny/data/cat_time_df.csv", stringsAsFactors = F)
+products = read.csv("Shiny/data/products.csv", stringsAsFactors = F)
 states = geojsonio::geojson_read("Shiny/data/br-states.json", what = "sp")
 
 geo_choices = list(
@@ -54,6 +55,7 @@ ui <- fluidPage(
       dashboardHeader(title = "E-commerce"),
       dashboardSidebar(
         sidebarMenu(
+          menuItem("Products", tabName = "product", icon = icon("table")),
           menuItem("Geographic", tabName = "geo", icon = icon("map")),
           menuItem("Trends", tabName = "time", icon = icon("line-chart")),
           menuItem( "Categories", tabName = "cat", icon = icon("dashboard"))
@@ -62,6 +64,18 @@ ui <- fluidPage(
       dashboardBody(
         tags$style(type = "text/css", "#geo {height: calc(100vh - 80px) !important;}"),
         tabItems(
+          tabItem(tabName = "product",
+                    fluidRow(
+                      box(
+                        title = "Products",
+                        solidHeader = T,
+                        collapsible = T,
+                        width = NULL,
+                        status = "info",
+                        DT::DTOutput("product_table")
+                      )
+                    )
+                  ),
           tabItem(tabName = "geo", 
             fluidRow(
               column(
@@ -275,8 +289,21 @@ server <- function(input, output, session) {
       )
   })
 
+  output$product_table = DT::renderDT({
+    DT::datatable(
+      products,
+      extensions = "FixedColumns",
+      options = list(
+        fixedColumns = list(leftColumns = 3),
+        autoWidth = TRUE,
+        scrollX = TRUE,
+        dom = "t"
+      )
+    )
+  })
+
   # Geo Data Output
-  output$table = renderTable(
+  output$table = DT::renderDataTable(
     {head(geo_df_table(), 6)},
     striped = T,
     spacing = 'l',

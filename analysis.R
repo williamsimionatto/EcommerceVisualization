@@ -245,4 +245,5 @@ write.csv(geo_df, file = "Shiny/data/geo_df.csv", row.names = F)
 write.csv(time_df, file = "Shiny/data/time_df.csv", row.names = F)
 write.csv(cat_df, file = "Shiny/data/cat_df.csv", row.names = F)
 write.csv(cat_time_df, file = "Shiny/data/cat_time_df.csv", row.names = F)
+write.csv(head(products, 50), file = "Shiny/data/products.csv", row.names = F)
 
