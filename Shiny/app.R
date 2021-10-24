@@ -150,34 +150,27 @@ ui <- fluidPage(
               column(
                 width = 9,
                 box(
-                  title = "Total Sales",
+                  title = "Bar Chart",
                   solidHeader = T,
                   width = NULL,
-                  height = 800,
+                  height = 500,
                   status = "info",
-                  htmlOutput("cat_TotalSales")
+                  htmlOutput("cat")
                 )
               ),
               column(
-                width = 9,
+                width = 3,
                 box(
-                  title = "Unit Sales",
+                  title = "Variables Input",
                   solidHeader = T,
                   width = NULL,
-                  height = 800,
                   status = "info",
-                  htmlOutput("cat_UnitSales")
-                )
-              ),
-              column(
-                width = 9,
-                box(
-                  title = "Average Review Score",
-                  solidHeader = T,
-                  width = NULL,
-                  height = 800,
-                  status = "info",
-                  htmlOutput("cat_AverageReview")
+                  selectInput(
+                    "catvalue",
+                    label = NULL,
+                    choices = catvalue_choices,
+                    selected = "total_sales"
+                  )
                 )
               )
             )
@@ -226,24 +219,13 @@ server <- function(input, output, session) {
       arrange(desc(value))
   })
   
-  cat_total_sales_bar = reactive({
+  cat_df_bar = reactive({
+    req(input$catvalue)
     cat_df %>%
-      select(category, value = 'total_sales') %>%
+      select(category, value = input$catvalue) %>%
       arrange(., desc(value))
   })
   
-  cat_unit_sales_bar = reactive({
-    cat_df %>%
-      select(category, value = 'aov') %>%
-      arrange(., desc(value))
-  })
-  
-  cat_avg_review_bar = reactive({
-    cat_df %>%
-      select(category, value = 'avg_review') %>%
-      arrange(., desc(value))
-  })
-
   # Graph for Map
   output$geo = renderLeaflet({
     pal = colorBin("Reds", geo_df[, input$geoin], bins = bins$y, pretty = F)
@@ -300,30 +282,17 @@ server <- function(input, output, session) {
     spacing = 'l',
     width = '100%',
     colnames = F,
-    digits = 2)
+    digits = 2
+  )
   
   # Categories Bar Chart
-  output$cat_TotalSales = renderGvis(
+  output$cat = renderGvis(
     gvisBarChart(
-      cat_total_sales_bar(),
-      options = bar_options
-    )
-  )
-  
-  output$cat_UnitSales = renderGvis(
-    gvisBarChart(
-      cat_unit_sales_bar(),
-      options = bar_options
-    )
-  )
-  
-  output$cat_AverageReview = renderGvis(
-    gvisBarChart(
-      cat_avg_review_bar(),
+      cat_df_bar(),
       options = list(
         width = "automatic",
-        height = "800px",
-        bar = "{groupWidth: '80%'}",
+        height = "300px",
+        bar = "{groupWidth: '60%'}",
         hAxis = "{title:'Sales (in $BRL)', format: 'short', scaleType: 'log'}",
         animation = "{startup: true}",
         legend = "none"
