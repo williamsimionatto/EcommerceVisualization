@@ -9,6 +9,7 @@ library(maps)
 library(geojsonio)
 library(RColorBrewer)
 library(stats)
+library(plotly)
 
 # loading dfs
 geo_df = read.csv("Shiny/data/geo_df.csv", stringsAsFactors = F)
@@ -169,7 +170,7 @@ ui <- fluidPage(
                   width = NULL,
                   height = 500,
                   status = "info",
-                  htmlOutput("cat")
+                  plotlyOutput("cat")
                 )
               ),
               column(
@@ -336,19 +337,16 @@ server <- function(input, output, session) {
       )
     )
   })
+
   
   # Categories Bar Chart
-  output$cat = renderGvis(
-    gvisBarChart(
+  output$cat = renderPlotly(  
+    fig <- plot_ly(
       cat_df_bar(),
-      options = list(
-        width = "automatic",
-        height = "300px",
-        bar = "{groupWidth: '60%'}",
-        hAxis = "{title:'Sales (in $BRL)', format: 'short', scaleType: 'log'}",
-        animation = "{startup: true}",
-        legend = "none"
-      )
+      y = ~category,
+      x = ~value,
+      type = "bar",
+      orientation = 'h'
     )
   )
 }
