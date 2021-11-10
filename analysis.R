@@ -40,7 +40,7 @@ shipping_cost = items %>%
   summarise(shipping_cost = sum(freight_value))
 
 # Joining all tables
-joined_order = orders  %>% 
+joined_order = orders %>% 
   filter(order_delivered_customer_date != '',
          order_delivered_carrier_date != '',
          order_estimated_delivery_date != '') %>%

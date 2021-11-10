@@ -48,7 +48,7 @@ bar_options = list(
   legend = "none"
 )
 
-ui <- fluidPage(
+ui = fluidPage(
   theme = "style.css", 
   shinyUI(
     dashboardPage(
@@ -66,49 +66,49 @@ ui <- fluidPage(
         tags$style(type = "text/css", "#geo {height: calc(100vh - 80px) !important;}"),
         tabItems(
           tabItem(tabName = "product",
-                    fluidRow(
+                  fluidRow(
+                    box(
+                      title = "Products",
+                      solidHeader = T,
+                      collapsible = T,
+                      width = NULL,
+                      status = "info",
+                      DT::DTOutput("product_table")
+                    )
+                  )
+          ),
+          tabItem(tabName = "geo", 
+                  fluidRow(
+                    column(
+                      width = 9,
                       box(
-                        title = "Products",
+                        title = "Map",
+                        solidHeader = T,
+                        status = "info",
+                        leafletOutput("geo", height = 800),
+                        width = NULL,
+                        height = "auto"
+                      )
+                    ),
+                    column(
+                      width = 3,
+                      box(
+                        title = "Select to Plot",
+                        solidHeader = T,
+                        width = NULL,
+                        status = "info",
+                        selectizeInput("geoin", label = NULL, geo_choices)
+                      ),
+                      box(
+                        title = "Data",
                         solidHeader = T,
                         collapsible = T,
                         width = NULL,
                         status = "info",
-                        DT::DTOutput("product_table")
+                        tableOutput({"table"})
                       )
                     )
-                  ),
-          tabItem(tabName = "geo", 
-            fluidRow(
-              column(
-                width = 9,
-                box(
-                  title = "Map",
-                  solidHeader = T,
-                  status = "info",
-                  leafletOutput("geo", height = 800),
-                  width = NULL,
-                  height = "auto"
-                )
-              ),
-              column(
-                width = 3,
-                box(
-                  title = "Select to Plot",
-                  solidHeader = T,
-                  width = NULL,
-                  status = "info",
-                  selectizeInput("geoin", label = NULL, geo_choices)
-                ),
-                box(
-                  title = "Data",
-                  solidHeader = T,
-                  collapsible = T,
-                  width = NULL,
-                  status = "info",
-                  tableOutput({"table"})
-                )
-              )
-            )
+                  )
           ),
           tabItem(
             tabName = "time",
