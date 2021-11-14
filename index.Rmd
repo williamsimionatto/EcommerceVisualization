@@ -16,6 +16,9 @@ O Dataset é divido em 8 arquivos .csv distintos na seguinte modelagem:
 
 Existe também um arquivo com a tradução dos nomes da categoria do produto.
 
+## Preparação dos dados
+Foi utilizado a bilioteca *tidyverse* para tratamento dos dados. Resumidamente foram realizados sumarizações e uniões dos 8 arquivos, gerando ao final novos arquivos para elaboração do dashboard.
+
 ## Seções
 O aplicativo foi divido em seções, entre elas:
 
