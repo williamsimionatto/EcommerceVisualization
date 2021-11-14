@@ -18,6 +18,9 @@ Existe também um arquivo com a tradução dos nomes da categoria do produto.
 
 ## Preparação dos dados
 Foi utilizado a bilioteca *tidyverse* para tratamento dos dados. Resumidamente foram realizados sumarizações e uniões dos 8 arquivos, gerando ao final novos arquivos para elaboração do dashboard.
+O arquivo analysis.R contém o processo de preparação dos dados.
+
+Obs: Se necessário, realizar o download do Dataset e extrair na pasta **brazilian-ecommerce-data**.
 
 ## Seções
 O aplicativo foi divido em seções, entre elas:
